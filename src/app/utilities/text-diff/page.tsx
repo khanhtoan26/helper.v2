@@ -1,6 +1,6 @@
 "use client";
 
-import { diffTextByLines } from "@/lib/textDiff";
+import { diffTextWords } from "@/lib/textDiff";
 import {
   Box,
   Button,
@@ -15,30 +15,38 @@ import {
 } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
 
-function Line(props: { kind: "added" | "removed" | "unchanged"; text: string }) {
+function Segment(props: { kind: "added" | "removed" | "unchanged"; text: string }) {
+  if (!props.text) return null;
   const bg =
     props.kind === "added"
       ? { base: "green.50", _dark: "green.900" }
       : props.kind === "removed"
         ? { base: "red.50", _dark: "red.900" }
         : "transparent";
-  const borderColor =
+  const color =
     props.kind === "added"
-      ? { base: "green.200", _dark: "green.700" }
+      ? { base: "green.800", _dark: "green.200" }
       : props.kind === "removed"
-        ? { base: "red.200", _dark: "red.700" }
-        : "transparent";
+        ? { base: "red.800", _dark: "red.200" }
+        : "inherit";
+  const deco =
+    props.kind === "removed"
+      ? "line-through"
+      : props.kind === "added"
+        ? "none"
+        : "none";
 
   return (
     <Box
-      px="2"
-      py="1"
+      as="span"
+      px="1"
+      py="0.5"
+      borderRadius="sm"
       bg={bg}
-      borderLeftWidth={props.kind === "unchanged" ? "0" : "3px"}
-      borderLeftColor={borderColor}
+      color={color}
+      textDecoration={deco}
       fontFamily="mono"
       whiteSpace="pre-wrap"
-      wordBreak="break-word"
     >
       {props.text}
     </Box>
@@ -46,18 +54,20 @@ function Line(props: { kind: "added" | "removed" | "unchanged"; text: string }) 
 }
 
 export default function TextDiffPage() {
-  const [left, setLeft] = useState("line 1\nline 2\nline 3\n");
-  const [right, setRight] = useState("line 1\nline 2 changed\nline 3\nline 4\n");
+  const [left, setLeft] = useState("The quick brown fox\njumps over the lazy dog.");
+  const [right, setRight] = useState(
+    "The quick brown cat\njumped over a very lazy dog.",
+  );
 
-  const diff = useMemo(() => diffTextByLines(left, right), [left, right]);
+  const diff = useMemo(() => diffTextWords(left, right), [left, right]);
 
   const summary = useMemo(() => {
     let added = 0;
     let removed = 0;
     for (const d of diff) {
-      if (d.type === "added") added += d.text.split("\n").filter(Boolean).length;
-      if (d.type === "removed")
-        removed += d.text.split("\n").filter(Boolean).length;
+      const words = d.text.split(/\s+/).filter(Boolean).length;
+      if (d.type === "added") added += words;
+      if (d.type === "removed") removed += words;
     }
     return { added, removed };
   }, [diff]);
@@ -67,8 +77,8 @@ export default function TextDiffPage() {
       <Box>
         <Heading size="lg">Text Diff</Heading>
         <Text color="muted" mt="2">
-          Compare two texts by lines and highlight added/removed content. Runs
-          locally in your browser.
+          So sánh hai đoạn văn bản và highlight phần thêm/bớt ở mức từ/ký tự. Chạy
+          hoàn toàn trong trình duyệt.
         </Text>
       </Box>
 
@@ -82,22 +92,22 @@ export default function TextDiffPage() {
         <Stack gap="4">
           <SimpleGrid columns={{ base: 1, md: 2 }} gap="4">
             <Stack gap="2">
-              <Text fontWeight="600">Left</Text>
+              <Text fontWeight="600">Text A</Text>
               <Textarea
                 value={left}
                 onChange={(e) => setLeft(e.target.value)}
                 fontFamily="mono"
-                minH="180px"
+                minH="160px"
                 resize="vertical"
               />
             </Stack>
             <Stack gap="2">
-              <Text fontWeight="600">Right</Text>
+              <Text fontWeight="600">Text B</Text>
               <Textarea
                 value={right}
                 onChange={(e) => setRight(e.target.value)}
                 fontFamily="mono"
-                minH="180px"
+                minH="160px"
                 resize="vertical"
               />
             </Stack>
@@ -115,59 +125,88 @@ export default function TextDiffPage() {
             </Button>
             <Flex align="center" gap="3" ml="auto">
               <Text fontSize="sm" color="muted">
-                +{summary.added} / -{summary.removed}
+                +{summary.added} / -{summary.removed} (words)
               </Text>
             </Flex>
           </HStack>
 
           <Separator />
 
+          <Box>
+            <Text fontWeight="600" mb="2">
+              Diff view (merged)
+            </Text>
+            <Box
+              bg="bg"
+              borderWidth="1px"
+              borderColor="border"
+              borderRadius="md"
+              p="3"
+              minH="140px"
+              whiteSpace="pre-wrap"
+              wordBreak="break-word"
+              fontFamily="mono"
+            >
+              {diff.map((d, idx) => (
+                <Segment key={`merged-${idx}-${d.type}`} kind={d.type} text={d.text} />
+              ))}
+            </Box>
+          </Box>
+
           <SimpleGrid columns={{ base: 1, md: 2 }} gap="4">
             <Box>
               <Text fontWeight="600" mb="2">
-                Left view
+                View A (perspective of A)
               </Text>
               <Box
                 bg="bg"
                 borderWidth="1px"
                 borderColor="border"
                 borderRadius="md"
-                overflow="auto"
-                maxH="360px"
+                p="3"
+                minH="140px"
+                whiteSpace="pre-wrap"
+                wordBreak="break-word"
+                fontFamily="mono"
               >
-                {diff.map((d, idx) =>
-                  d.type === "added" ? null : (
-                    <Line
-                      key={`${idx}-${d.type}`}
-                      kind={d.type === "removed" ? "removed" : "unchanged"}
-                      text={d.text}
-                    />
-                  ),
-                )}
+                {diff.map((d, idx) => (
+                  <Segment
+                    key={`left-${idx}-${d.type}`}
+                    kind={
+                      d.type === "added"
+                        ? "removed"
+                        : d.type === "removed"
+                          ? "added"
+                          : "unchanged"
+                    }
+                    text={d.text}
+                  />
+                ))}
               </Box>
             </Box>
 
             <Box>
               <Text fontWeight="600" mb="2">
-                Right view
+                View B (perspective of B)
               </Text>
               <Box
                 bg="bg"
                 borderWidth="1px"
                 borderColor="border"
                 borderRadius="md"
-                overflow="auto"
-                maxH="360px"
+                p="3"
+                minH="140px"
+                whiteSpace="pre-wrap"
+                wordBreak="break-word"
+                fontFamily="mono"
               >
-                {diff.map((d, idx) =>
-                  d.type === "removed" ? null : (
-                    <Line
-                      key={`${idx}-${d.type}`}
-                      kind={d.type === "added" ? "added" : "unchanged"}
-                      text={d.text}
-                    />
-                  ),
-                )}
+                {diff.map((d, idx) => (
+                  <Segment
+                    key={`right-${idx}-${d.type}`}
+                    kind={d.type}
+                    text={d.text}
+                  />
+                ))}
               </Box>
             </Box>
           </SimpleGrid>

@@ -1,23 +1,18 @@
-import { diffLines } from "diff";
+import { diffWordsWithSpace } from "diff";
 
-export type DiffLine =
+export type DiffSegment =
   | { type: "added"; text: string }
   | { type: "removed"; text: string }
   | { type: "unchanged"; text: string };
 
-export function diffTextByLines(left: string, right: string): DiffLine[] {
-  const parts = diffLines(left, right);
-  const out: DiffLine[] = [];
-
-  for (const p of parts) {
-    const type: DiffLine["type"] = p.added
-      ? "added"
-      : p.removed
-        ? "removed"
-        : "unchanged";
-    out.push({ type, text: p.value });
-  }
-
-  return out;
+export function diffTextWords(left: string, right: string): DiffSegment[] {
+  // Add spaces around newlines so they are treated as tokens when diffing.
+  const normalize = (s: string) => s.replace(/\n/g, " \n ");
+  const parts = diffWordsWithSpace(normalize(left), normalize(right));
+  return parts.map((p) => {
+    if (p.added) return { type: "added", text: p.value };
+    if (p.removed) return { type: "removed", text: p.value };
+    return { type: "unchanged", text: p.value };
+  });
 }
 

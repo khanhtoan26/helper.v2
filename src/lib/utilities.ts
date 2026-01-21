@@ -3,7 +3,7 @@ export type UtilityMeta = {
   name: string;
   slug: string;
   description: string;
-  category: "Encoding" | "JSON" | "DateTime" | "Other";
+  category: "Encoding" | "JSON" | "DateTime" | "Text" | "Other";
   path: string;
   isNew?: boolean;
 };
@@ -26,13 +26,22 @@ export const utilities: UtilityMeta[] = [
     path: "/utilities/base64",
   },
   {
+    id: "text-diff",
+    name: "Text Diff",
+    slug: "text-diff",
+    description: "Compare two texts and highlight added/removed lines.",
+    category: "Text",
+    path: "/utilities/text-diff",
+    isNew: true,
+  },
+  {
     id: "timestamp-date",
     name: "Timestamp ↔ Date",
     slug: "timestamp-date",
     description: "Convert Unix timestamps and human-readable dates.",
     category: "DateTime",
     path: "/utilities/timestamp-date",
-    isNew: true,
+    isNew: false,
   },
 ];
 

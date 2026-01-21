@@ -23,7 +23,7 @@ export default function AboutPage() {
       </Text>
 
       <Link
-        href="https://github.com/"
+        href="https://github.com/khanhtoan26"
         target="_blank"
         rel="noopener noreferrer"
         color="brand.600"

@@ -4,6 +4,13 @@
 
 Helper.v2 is a modern, static Next.js utilities site designed for GitHub Pages deployment. It provides browser-based tools for common data transformations (JSON formatting, Base64 encoding, timestamp conversion) with a clean, flat UI and extensible architecture.
 
+### Included Utilities
+
+- **JSON Formatter**: Format/minify/validate JSON
+- **Base64 Encode/Decode**: UTF-8 safe encode/decode
+- **Text Diff**: Word/character-aware diff with inline added/removed highlighting
+- **Timestamp ↔ Date**: (stub) Unix timestamp to ISO date
+
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router) with TypeScript
@@ -24,6 +31,7 @@ helper.v2/
 │   │   └── utilities/         # Utility pages
 │   │       ├── json-formatter/
 │   │       ├── base64/
+│   │       ├── text-diff/              # Word-level diff UI
 │   │       └── timestamp-date/
 │   ├── components/            # Reusable UI components
 │   │   ├── AppShell.tsx       # Main layout with header/nav/footer
@@ -32,6 +40,7 @@ helper.v2/
 │   │   ├── utilities.ts       # Utility registry (metadata)
 │   │   ├── json.ts            # JSON parsing/formatting logic
 │   │   ├── base64.ts          # Base64 encode/decode logic
+│   │   ├── textDiff.ts        # Word-level diff logic
 │   │   └── datetime.ts        # Timestamp/date conversion logic
 │   └── theme/                 # Chakra UI theme configuration
 │       └── index.ts           # Custom flat theme tokens
@@ -112,6 +121,15 @@ export const utilities: Utility[] = [
 ## Utility Page Pattern
 
 Each utility follows a consistent structure:
+
+### Text Diff specific notes
+
+- **Diff algorithm**: Uses `diffWordsWithSpace` from `diff` for word/char-aware diff, preserving whitespace and newlines (newline is tokenized by surrounding spaces).
+- **Views**:
+  - **Merged view**: Combined diff with inline highlights. Added = green, Removed = red, Unchanged = neutral.
+  - **View A (perspective of A)**: Same merged content but **added/removed are swapped** to reflect “what changed relative to A” (A sees B’s additions as removals, and A’s removals as additions).
+  - **View B (perspective of B)**: Standard merged diff (no swapping), showing B’s additions in green and removals in red.
+- **Summary**: Shows counts of added/removed words for quick glance.
 
 ### 1. Page Component (`app/utilities/[slug]/page.tsx`)
 

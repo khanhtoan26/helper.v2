@@ -41,7 +41,7 @@ function UtilitiesMenu(props: { variant: "desktop" | "mobile" }) {
           <Button
             key={u.id}
             asChild
-            variant="ghost"
+            variant="solid"
             justifyContent="space-between"
           >
             <NextLink href={u.path}>
@@ -65,7 +65,7 @@ function UtilitiesMenu(props: { variant: "desktop" | "mobile" }) {
         <Button variant="ghost">Utilities</Button>
       </MenuTrigger>
       <MenuPositioner>
-        <MenuContent minW="320px" p="1">
+        <MenuContent minW="320px" p="1" bg="surface" borderWidth="1px" borderColor="border">
           {items.map((u) => (
             <MenuItem key={u.id} asChild value={u.id}>
               <NextLink href={u.path}>

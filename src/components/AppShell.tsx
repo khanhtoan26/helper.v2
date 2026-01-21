@@ -131,7 +131,7 @@ export function AppShell(props: { children: React.ReactNode }) {
                 display={{ base: "none", md: "inline-flex" }}
               >
                 <a
-                  href="https://github.com/"
+                  href="https://github.com/khanhtoan26"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

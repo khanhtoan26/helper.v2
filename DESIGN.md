@@ -4,6 +4,13 @@
 
 Helper.v2 is a modern, static Next.js utilities site designed for GitHub Pages deployment. It provides browser-based tools for common data transformations (JSON formatting, Base64 encoding, timestamp conversion) with a clean, flat UI and extensible architecture.
 
+### Included Utilities
+
+- **JSON Formatter**: Format/minify/validate JSON
+- **Base64 Encode/Decode**: UTF-8 safe encode/decode
+- **Text Diff**: Line-based diff of two texts with added/removed highlighting
+- **Timestamp ↔ Date**: (stub) Unix timestamp to ISO date
+
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router) with TypeScript
@@ -24,6 +31,7 @@ helper.v2/
 │   │   └── utilities/         # Utility pages
 │   │       ├── json-formatter/
 │   │       ├── base64/
+│   │       ├── text-diff/
 │   │       └── timestamp-date/
 │   ├── components/            # Reusable UI components
 │   │   ├── AppShell.tsx       # Main layout with header/nav/footer
@@ -32,6 +40,7 @@ helper.v2/
 │   │   ├── utilities.ts       # Utility registry (metadata)
 │   │   ├── json.ts            # JSON parsing/formatting logic
 │   │   ├── base64.ts          # Base64 encode/decode logic
+│   │   ├── textDiff.ts        # Line-based diff logic
 │   │   └── datetime.ts        # Timestamp/date conversion logic
 │   └── theme/                 # Chakra UI theme configuration
 │       └── index.ts           # Custom flat theme tokens
@@ -112,6 +121,12 @@ export const utilities: Utility[] = [
 ## Utility Page Pattern
 
 Each utility follows a consistent structure:
+
+### Text Diff specific notes
+
+- **Diff algorithm**: Uses the small `diff` library (`diffLines`) for stable line-based diffs.
+- **UI**: Two panes (left/right). Left pane hides added chunks; right pane hides removed chunks.
+- **Highlighting**: Green for additions, red for removals; unchanged lines are neutral.
 
 ### 1. Page Component (`app/utilities/[slug]/page.tsx`)
 

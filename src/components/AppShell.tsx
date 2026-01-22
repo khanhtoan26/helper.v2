@@ -179,14 +179,14 @@ export function AppShell(props: { children: React.ReactNode }) {
         {props.children}
       </Container>
 
-      <Box as="footer" borderTopWidth="1px" borderColor="border" bg="surface">
+      {/* <Box as="footer" borderTopWidth="1px" borderColor="border" bg="surface">
         <Container maxW="960px" py="6">
           <Text fontSize="sm" color="muted">
             Built for quick, safe conversions in the browser. No data leaves your
             device.
           </Text>
         </Container>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

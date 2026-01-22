@@ -149,26 +149,26 @@ export function AppShell(props: { children: React.ReactNode }) {
                     Menu
                   </Button>
                 </DrawerTrigger>
-                <DrawerPositioner>
                   <DrawerBackdrop />
-                  <DrawerContent>
-                    <DrawerCloseTrigger />
-                    <DrawerHeader>
-                      <DrawerTitle>Menu</DrawerTitle>
-                    </DrawerHeader>
-                    <DrawerBody>
-                      <Stack gap="2">
-                        <Button asChild variant="ghost" justifyContent="flex-start">
-                          <NextLink href="/">Home</NextLink>
-                        </Button>
-                        <Button asChild variant="ghost" justifyContent="flex-start">
-                          <NextLink href="/about">About</NextLink>
-                        </Button>
-                        <UtilitiesMenu variant="mobile" />
-                      </Stack>
-                    </DrawerBody>
-                  </DrawerContent>
-                </DrawerPositioner>
+                  <DrawerPositioner padding="4">
+                    <DrawerContent rounded="md" bg="surface">
+                      <DrawerCloseTrigger />
+                      <DrawerHeader>
+                        <DrawerTitle>Menu</DrawerTitle>
+                      </DrawerHeader>
+                      <DrawerBody>
+                        <Stack gap="2">
+                          <Button asChild variant="ghost" justifyContent="flex-start">
+                            <NextLink href="/">Home</NextLink>
+                          </Button>
+                          <Button asChild variant="ghost" justifyContent="flex-start">
+                            <NextLink href="/about">About</NextLink>
+                          </Button>
+                          <UtilitiesMenu variant="desktop" />
+                        </Stack>
+                      </DrawerBody>
+                    </DrawerContent>
+                  </DrawerPositioner>
               </DrawerRoot>
             </HStack>
           </Flex>

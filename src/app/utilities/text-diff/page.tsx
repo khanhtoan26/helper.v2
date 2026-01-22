@@ -77,8 +77,7 @@ export default function TextDiffPage() {
       <Box>
         <Heading size="lg">Text Diff</Heading>
         <Text color="muted" mt="2">
-          So sánh hai đoạn văn bản và highlight phần thêm/bớt ở mức từ/ký tự. Chạy
-          hoàn toàn trong trình duyệt.
+        Compare two text segments and highlight additions/deletions at the word/character level.
         </Text>
       </Box>
 

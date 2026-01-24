@@ -28,6 +28,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { utilities } from "@/lib/utilities";
+import { Breadcrumb } from "./Breadcrumb";
 
 function UtilitiesMenu(props: { variant: "desktop" | "mobile" }) {
   const items = utilities;
@@ -176,6 +177,7 @@ export function AppShell(props: { children: React.ReactNode }) {
       </Box>
 
       <Container maxW="960px" py={{ base: "6", md: "10" }}>
+        <Breadcrumb />
         {props.children}
       </Container>
 

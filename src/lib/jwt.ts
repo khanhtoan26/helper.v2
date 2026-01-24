@@ -1,3 +1,5 @@
+import { decodeBase64Url } from "./base64";
+
 export interface JwtDecodeResult {
   header?: Record<string, unknown>;
   payload?: Record<string, unknown>;
@@ -36,25 +38,37 @@ export function decodeJwt(token: string): JwtDecodeResult {
 
     // Decode header
     let header: any;
+    const headerResult = decodeBase64Url(headerB64);
+    if (!headerResult.ok) {
+      return {
+        isValid: false,
+        error: "Failed to decode header: " + headerResult.error,
+      };
+    }
     try {
-      const headerJson = base64UrlDecode(headerB64);
-      header = JSON.parse(headerJson);
+      header = JSON.parse(headerResult.value);
     } catch (e) {
       return {
         isValid: false,
-        error: "Failed to decode header: " + (e instanceof Error ? e.message : "Invalid Base64"),
+        error: "Failed to parse header JSON: " + (e instanceof Error ? e.message : "Invalid JSON"),
       };
     }
 
     // Decode payload
     let payload: any;
+    const payloadResult = decodeBase64Url(payloadB64);
+    if (!payloadResult.ok) {
+      return {
+        isValid: false,
+        error: "Failed to decode payload: " + payloadResult.error,
+      };
+    }
     try {
-      const payloadJson = base64UrlDecode(payloadB64);
-      payload = JSON.parse(payloadJson);
+      payload = JSON.parse(payloadResult.value);
     } catch (e) {
       return {
         isValid: false,
-        error: "Failed to decode payload: " + (e instanceof Error ? e.message : "Invalid Base64"),
+        error: "Failed to parse payload JSON: " + (e instanceof Error ? e.message : "Invalid JSON"),
       };
     }
 
@@ -69,38 +83,6 @@ export function decodeJwt(token: string): JwtDecodeResult {
       isValid: false,
       error: e instanceof Error ? e.message : "Unknown error decoding JWT",
     };
-  }
-}
-
-/**
- * Decode Base64URL to string
- * JWT uses Base64URL encoding (not standard Base64)
- */
-function base64UrlDecode(str: string): string {
-  // Replace Base64URL chars with standard Base64
-  let base64 = str.replace(/-/g, "+").replace(/_/g, "/");
-  
-  // Add padding if needed
-  const pad = base64.length % 4;
-  if (pad) {
-    if (pad === 1) {
-      throw new Error("Invalid Base64 string");
-    }
-    base64 += "=".repeat(4 - pad);
-  }
-
-  // Decode from Base64
-  try {
-    const decoded = atob(base64);
-    // Convert to UTF-8
-    return decodeURIComponent(
-      decoded
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-  } catch (e) {
-    throw new Error("Invalid Base64 encoding");
   }
 }
 

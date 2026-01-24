@@ -35,8 +35,8 @@ export function parseNumbers(input: string): ParseNumbersResult {
     .filter((s) => s.length > 0);
 
   for (const token of tokens) {
-    const num = parseFloat(token);
-    if (isNaN(num)) {
+    const num = Number(token);
+    if (!Number.isFinite(num)) {
       invalidValues.push(token);
     } else {
       numbers.push(num);

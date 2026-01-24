@@ -18,6 +18,15 @@ export const utilities: UtilityMeta[] = [
     path: "/utilities/json-formatter",
   },
   {
+    id: "json-decoder",
+    name: "JSON Decoder",
+    slug: "json-decoder",
+    description: "Decode escaped/stringified JSON from server logs (handles \\n, \\\", etc).",
+    category: "JSON",
+    path: "/utilities/json-decoder",
+    isNew: true,
+  },
+  {
     id: "base64",
     name: "Base64 Encode/Decode",
     slug: "base64",

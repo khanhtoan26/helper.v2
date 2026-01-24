@@ -1,6 +1,6 @@
 export interface JwtDecodeResult {
-  header?: any;
-  payload?: any;
+  header?: Record<string, unknown>;
+  payload?: Record<string, unknown>;
   signature?: string;
   error?: string;
   isValid: boolean;

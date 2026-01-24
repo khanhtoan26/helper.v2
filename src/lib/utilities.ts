@@ -3,7 +3,7 @@ export type UtilityMeta = {
   name: string;
   slug: string;
   description: string;
-  category: "Encoding" | "JSON" | "DateTime" | "Text" | "Other";
+  category: "Encoding" | "JSON" | "DateTime" | "Text" | "Security" | "Math" | "Other";
   path: string;
   isNew?: boolean;
 };
@@ -24,6 +24,24 @@ export const utilities: UtilityMeta[] = [
     description: "Encode plain text to Base64 and decode back.",
     category: "Encoding",
     path: "/utilities/base64",
+  },
+  {
+    id: "jwt-decoder",
+    name: "JWT Decoder",
+    slug: "jwt-decoder",
+    description: "Decode and inspect JWT tokens (header, payload, signature).",
+    category: "Security",
+    path: "/utilities/jwt-decoder",
+    isNew: true,
+  },
+  {
+    id: "sum-calculator",
+    name: "Sum Calculator",
+    slug: "sum-calculator",
+    description: "Calculate the sum of a list of numbers (space or newline separated).",
+    category: "Math",
+    path: "/utilities/sum-calculator",
+    isNew: true,
   },
   {
     id: "text-diff",

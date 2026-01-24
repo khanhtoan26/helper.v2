@@ -25,3 +25,30 @@ export function decodeBase64Safe(input: string): Base64Result {
   }
 }
 
+/**
+ * Decode Base64URL to string
+ * JWT uses Base64URL encoding which replaces + with - and / with _
+ * and omits padding characters
+ */
+export function decodeBase64Url(input: string): Base64Result {
+  try {
+    // Convert Base64URL to standard Base64
+    let base64 = input.replace(/-/g, "+").replace(/_/g, "/");
+    
+    // Add padding if needed
+    const pad = base64.length % 4;
+    if (pad) {
+      if (pad === 1) {
+        return { ok: false, error: "Invalid Base64URL string" };
+      }
+      base64 += "=".repeat(4 - pad);
+    }
+
+    // Reuse the existing safe Base64 decoding logic
+    return decodeBase64Safe(base64);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Invalid Base64URL";
+    return { ok: false, error: msg };
+  }
+}
+

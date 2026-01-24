@@ -15,7 +15,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { decodeJwt, formatTimestamp, isExpired } from "@/lib/jwt";
+import { decodeJwt, formatTimestamp, isExpired, JwtDecodeResult } from "@/lib/jwt";
 
 async function copyToClipboard(text: string) {
   await navigator.clipboard.writeText(text);
@@ -23,7 +23,7 @@ async function copyToClipboard(text: string) {
 
 export default function JwtDecoderPage() {
   const [input, setInput] = useState<string>("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<JwtDecodeResult | null>(null);
   const [error, setError] = useState<string>("");
 
   function handleDecode() {
@@ -150,10 +150,10 @@ export default function JwtDecoderPage() {
             {/* Header info */}
             {result.header && (
               <Flex gap="2" mt="2" flexWrap="wrap">
-                {result.header.alg && (
+                {typeof result.header.alg === 'string' && result.header.alg && (
                   <Badge colorPalette="blue">Algorithm: {result.header.alg}</Badge>
                 )}
-                {result.header.typ && (
+                {typeof result.header.typ === 'string' && result.header.typ && (
                   <Badge colorPalette="gray">Type: {result.header.typ}</Badge>
                 )}
               </Flex>
@@ -194,25 +194,25 @@ export default function JwtDecoderPage() {
             {/* Payload claims info */}
             {result.payload && (
               <Stack gap="2" mt="3">
-                {result.payload.iss && (
+                {typeof result.payload.iss === 'string' && result.payload.iss && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">Issuer (iss):</Text>
                     <Text>{result.payload.iss}</Text>
                   </Flex>
                 )}
-                {result.payload.sub && (
+                {typeof result.payload.sub === 'string' && result.payload.sub && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">Subject (sub):</Text>
                     <Text>{result.payload.sub}</Text>
                   </Flex>
                 )}
-                {result.payload.aud && (
+                {result.payload.aud !== undefined && result.payload.aud !== null && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">Audience (aud):</Text>
-                    <Text>{Array.isArray(result.payload.aud) ? result.payload.aud.join(", ") : result.payload.aud}</Text>
+                    <Text>{Array.isArray(result.payload.aud) ? result.payload.aud.join(", ") : String(result.payload.aud)}</Text>
                   </Flex>
                 )}
-                {result.payload.exp && (
+                {typeof result.payload.exp === 'number' && result.payload.exp && (
                   <Flex gap="2" fontSize="sm" align="center">
                     <Text fontWeight="600" color="muted">Expires (exp):</Text>
                     <Text>{formatTimestamp(result.payload.exp)}</Text>
@@ -223,19 +223,19 @@ export default function JwtDecoderPage() {
                     )}
                   </Flex>
                 )}
-                {result.payload.nbf && (
+                {typeof result.payload.nbf === 'number' && result.payload.nbf && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">Not Before (nbf):</Text>
                     <Text>{formatTimestamp(result.payload.nbf)}</Text>
                   </Flex>
                 )}
-                {result.payload.iat && (
+                {typeof result.payload.iat === 'number' && result.payload.iat && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">Issued At (iat):</Text>
                     <Text>{formatTimestamp(result.payload.iat)}</Text>
                   </Flex>
                 )}
-                {result.payload.jti && (
+                {typeof result.payload.jti === 'string' && result.payload.jti && (
                   <Flex gap="2" fontSize="sm">
                     <Text fontWeight="600" color="muted">JWT ID (jti):</Text>
                     <Text fontFamily="mono" fontSize="xs">{result.payload.jti}</Text>

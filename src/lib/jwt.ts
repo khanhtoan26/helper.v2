@@ -121,5 +121,5 @@ export function formatTimestamp(timestamp: number): string {
  */
 export function isExpired(exp: number): boolean {
   const now = Math.floor(Date.now() / 1000); // Current time in seconds
-  return exp < now;
+  return exp <= now;
 }

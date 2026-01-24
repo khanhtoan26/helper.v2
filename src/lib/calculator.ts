@@ -66,8 +66,17 @@ export function calculateSum(numbers: number[]): SumResult {
   const sum = numbers.reduce((acc, num) => acc + num, 0);
   const count = numbers.length;
   const average = sum / count;
-  const min = Math.min(...numbers);
-  const max = Math.max(...numbers);
+  let min = numbers[0];
+  let max = numbers[0];
+  for (let i = 1; i < numbers.length; i++) {
+    const value = numbers[i];
+    if (value < min) {
+      min = value;
+    }
+    if (value > max) {
+      max = value;
+    }
+  }
 
   return {
     sum,

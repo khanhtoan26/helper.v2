@@ -29,6 +29,7 @@ import {
 } from "@chakra-ui/react";
 import { utilities } from "@/lib/utilities";
 import { Breadcrumb } from "./Breadcrumb";
+import { ColorModeButton } from "./ui/color-mode";
 
 function UtilitiesMenu(props: { variant: "desktop" | "mobile" }) {
   const items = utilities;
@@ -125,6 +126,8 @@ export function AppShell(props: { children: React.ReactNode }) {
             <Spacer />
 
             <HStack gap="2">
+              <ColorModeButton />
+              
               <Link
                 asChild
                 fontSize="sm"

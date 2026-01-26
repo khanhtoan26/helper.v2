@@ -115,21 +115,34 @@ function manualUnescape(str: string): string {
 
 /**
  * Try to format JSON if it's valid
+ * Includes fallback to unescape double quotes if first parse fails
  */
 export function tryFormatJson(input: string): DecodeResult {
-  try {
-    const parsed = JSON.parse(input);
+  const process = (value: string) => {
+    const parsed = JSON.parse(value);
     const formatted = JSON.stringify(parsed, null, 2);
     return {
       success: true,
-      decoded: input,
+      decoded: value,
       formatted,
     };
-  } catch (e) {
-    return {
-      success: false,
-      error: e instanceof Error ? e.message : "Invalid JSON",
-    };
+  };
+
+  try {
+    // First attempt: try to parse normally
+    return process(input);
+  } catch (e1) {
+    try {
+      // Second attempt: unescape double quotes and try again
+      const unescapedInput = input.replace(/\\"/g, '"');
+      return process(unescapedInput);
+    } catch (e2) {
+      // Both attempts failed, return error
+      return {
+        success: false,
+        error: e2 instanceof Error ? e2.message : "Invalid JSON",
+      };
+    }
   }
 }
 

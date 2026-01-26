@@ -137,7 +137,9 @@ export function tryFormatJson(input: string): DecodeResult {
       const unescapedInput = input.replace(/\\"/g, '"');
       return process(unescapedInput);
     } catch (e2) {
-      // Both attempts failed, return error
+      // Both attempts failed. Return error from second attempt (e2)
+      // as it reflects the parsing failure after the unescape fix attempt,
+      // which provides more useful feedback for debugging
       return {
         success: false,
         error: e2 instanceof Error ? e2.message : "Invalid JSON",

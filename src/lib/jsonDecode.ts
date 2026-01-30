@@ -7,7 +7,7 @@ export interface DecodeResult {
 
 /**
  * Decode stringified/escaped JSON from server logs
- * Handles multiple levels of escaping and common patterns
+ * Tries to parse as-is first, then unescapes if needed
  */
 export function decodeEscapedJson(input: string): DecodeResult {
   if (!input || input.trim() === "") {
@@ -18,69 +18,27 @@ export function decodeEscapedJson(input: string): DecodeResult {
   }
 
   let current = input.trim();
-  let iterations = 0;
-  const maxIterations = 10; // Prevent infinite loops
-  const steps: string[] = [current];
 
   try {
-    // Try to decode multiple levels of stringification
-    while (iterations < maxIterations) {
-      iterations++;
-
-      // Check if it's a JSON string (starts and ends with quotes)
-      const isQuoted = (current.startsWith('"') && current.endsWith('"')) ||
-                      (current.startsWith("'") && current.endsWith("'"));
-
-      if (isQuoted) {
-        // Try to parse as JSON string
-        try {
-          const parsed = JSON.parse(current);
-          if (typeof parsed === "string") {
-            current = parsed;
-            steps.push(current);
-            continue; // Continue decoding if still a string
-          } else {
-            // Successfully parsed to an object/array
-            const formatted = JSON.stringify(parsed, null, 2);
-            return {
-              success: true,
-              decoded: current,
-              formatted,
-            };
-          }
-        } catch (e) {
-          // If JSON.parse fails, try manual unescaping
-          current = manualUnescape(current);
-          steps.push(current);
-          continue;
-        }
-      } else {
-        // Not quoted, try to parse directly
-        try {
-          const parsed = JSON.parse(current);
-          const formatted = JSON.stringify(parsed, null, 2);
-          return {
-            success: true,
-            decoded: current,
-            formatted,
-          };
-        } catch (e) {
-          // If this fails, return the last decoded version
-          return {
-            success: true,
-            decoded: current,
-            formatted: current,
-          };
-        }
-      }
+    try {
+      const parsed = JSON.parse(current);
+      const formatted = JSON.stringify(parsed, null, 2);
+      return {
+        success: true,
+        decoded: current,
+        formatted,
+      };
+    } catch (e) {
+      // If direct parse fails, unescape and try again
+      current = manualUnescape(current);
+      const parsed = JSON.parse(current);
+      const formatted = JSON.stringify(parsed, null, 2);
+      return {
+        success: true,
+        decoded: current,
+        formatted,
+      };
     }
-
-    // Max iterations reached
-    return {
-      success: true,
-      decoded: current,
-      formatted: current,
-    };
   } catch (e) {
     return {
       success: false,
@@ -90,27 +48,8 @@ export function decodeEscapedJson(input: string): DecodeResult {
   }
 }
 
-/**
- * Manually unescape a string (for cases where JSON.parse fails)
- */
 function manualUnescape(str: string): string {
-  // Remove surrounding quotes if present
-  let result = str;
-  if ((result.startsWith('"') && result.endsWith('"')) ||
-      (result.startsWith("'") && result.endsWith("'"))) {
-    result = result.slice(1, -1);
-  }
-
-  // Replace common escape sequences
-  result = result
-    .replace(/\\n/g, "\n")
-    .replace(/\\r/g, "\r")
-    .replace(/\\t/g, "\t")
-    .replace(/\\"/g, '"')
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\");
-
-  return result;
+  return str.replace(/\\"/g, '"').replace(/\\n\s*/g, " ");
 }
 
 /**
